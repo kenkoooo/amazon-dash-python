@@ -24,19 +24,16 @@ class DashMonitor:
         :param pkt: sniffed packet
         :return: None
         """
-        if ARP in pkt and pkt[ARP].op in (1, 2):
-            """
-            op==1: who has
-            誰がこの ip やねんみたいな感じで聞いてる
-            op==2: is at
-            ワイのこの mac address がその ip やみたいな感じで教えてる
-            """
+        if ARP not in pkt or pkt[ARP].op not in (1, 2):
+            return
 
+        if not self.mac_address:
             # ARPSourceMACField: mac address
-            print("MAC Address: {}".format(pkt[ARP].hwsrc))
-
+            logger.info("MAC Address: %s", pkt[ARP].hwsrc)
             # SourceIPField: source ip address
-            print("IP Address: {}".format(pkt[ARP].psrc))
+            logger.info("IP Address: %s", pkt[ARP].psrc)
+        elif pkt[ARP].hwsrc == self.mac_address:
+            logger.info("Called")
 
 
 def running_monitor(target):
@@ -66,7 +63,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Amazon Dash Button Monitor')
     parser.add_argument('-m', nargs='?', help="MAC Address of the Dash Button")
     args = parser.parse_args()
-    if not args.m or not is_valid_mac_address(args.m):
+    if args.m and not is_valid_mac_address(args.m):
         parser.print_help()
     else:
         running_monitor(args.m)
