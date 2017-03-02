@@ -33,7 +33,7 @@ class DashMonitor:
             # SourceIPField: source ip address
             logger.info("IP Address: %s", pkt[ARP].psrc)
         elif pkt[ARP].hwsrc == self.mac_address:
-            logger.info("Called")
+            logger.info("Dash Button Pushed")
 
 
 def running_monitor(target):
