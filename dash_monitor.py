@@ -12,8 +12,9 @@ logger.addHandler(handler)
 
 
 class DashMonitor:
-    def __init__(self, mac_address):
+    def __init__(self, mac_address, runnable):
         self.mac_address = mac_address
+        self.runnable = runnable
 
     def start(self):
         logger.info("Start monitoring: %s", self.mac_address)
@@ -37,6 +38,11 @@ class DashMonitor:
             logger.info("IP Address: %s", pkt[ARP].psrc)
         elif pkt[ARP].hwsrc == self.mac_address:
             logger.info("Dash Button Pushed")
+            self.runnable()
+
+
+def happy_function():
+    logger.info("YEAH!!!")
 
 
 def is_valid_mac_address(mac_address):
@@ -64,5 +70,5 @@ if __name__ == '__main__':
     if args.m and not is_valid_mac_address(args.m):
         parser.print_help()
     else:
-        monitor = DashMonitor(args.m)
+        monitor = DashMonitor(args.m, happy_function)
         monitor.start()
