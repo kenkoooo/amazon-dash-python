@@ -1,7 +1,7 @@
 import argparse
 from logging import getLogger, StreamHandler, DEBUG, Formatter
 
-from scapy.all import sniff, ARP
+from DashMonitor import DashMonitor
 
 logger = getLogger(__name__)
 handler = StreamHandler()
@@ -9,36 +9,6 @@ handler.setLevel(DEBUG)
 handler.setFormatter(Formatter(fmt='%(asctime)-15s %(message)s'))
 logger.setLevel(DEBUG)
 logger.addHandler(handler)
-
-
-class DashMonitor:
-    def __init__(self, mac_address, runnable):
-        self.mac_address = mac_address
-        self.runnable = runnable
-
-    def start(self):
-        logger.info("Start monitoring: %s", self.mac_address)
-        sniff(prn=self.arp_monitor_callback, filter="arp", store=0)
-
-    def arp_monitor_callback(self, pkt):
-        """
-        show MAC address and IP address from sniffed packet
-        :param pkt: sniffed packet
-        :return: None
-        """
-        if ARP not in pkt or pkt[ARP].op not in (1, 2):
-            # pkt[ARP].op == 1: who-has
-            # pkt[ARP].op == 2: is-at
-            return
-
-        if not self.mac_address:
-            # ARPSourceMACField: mac address
-            logger.info("MAC Address: %s", pkt[ARP].hwsrc)
-            # SourceIPField: source ip address
-            logger.info("IP Address: %s", pkt[ARP].psrc)
-        elif pkt[ARP].hwsrc == self.mac_address:
-            logger.info("Dash Button Pushed")
-            self.runnable()
 
 
 def happy_function():
@@ -70,5 +40,5 @@ if __name__ == '__main__':
     if args.m and not is_valid_mac_address(args.m):
         parser.print_help()
     else:
-        monitor = DashMonitor(args.m, happy_function)
+        monitor = DashMonitor(mac_address=args.m, runnable=happy_function, logger=logger)
         monitor.start()
