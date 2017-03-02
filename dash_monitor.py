@@ -36,11 +36,6 @@ class DashMonitor:
             logger.info("Dash Button Pushed")
 
 
-def running_monitor(target):
-    monitor = DashMonitor(target)
-    monitor.start()
-
-
 def is_valid_mac_address(mac_address):
     """
     validate mac address
@@ -66,4 +61,5 @@ if __name__ == '__main__':
     if args.m and not is_valid_mac_address(args.m):
         parser.print_help()
     else:
-        running_monitor(args.m)
+        monitor = DashMonitor(args.m)
+        monitor.start()
