@@ -1,11 +1,12 @@
 import argparse
-from logging import getLogger, StreamHandler, DEBUG
+from logging import getLogger, StreamHandler, DEBUG, Formatter
 
 from scapy.all import sniff, ARP
 
 logger = getLogger(__name__)
 handler = StreamHandler()
 handler.setLevel(DEBUG)
+handler.setFormatter(Formatter(fmt='%(asctime)-15s %(message)s'))
 logger.setLevel(DEBUG)
 logger.addHandler(handler)
 
@@ -25,6 +26,8 @@ class DashMonitor:
         :return: None
         """
         if ARP not in pkt or pkt[ARP].op not in (1, 2):
+            # pkt[ARP].op == 1: who-has
+            # pkt[ARP].op == 2: is-at
             return
 
         if not self.mac_address:
