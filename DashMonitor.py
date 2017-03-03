@@ -32,7 +32,7 @@ class DashMonitor:
         :return: None
         """
         if pkt[Ether].src in self.users:
-            self.logger.info("b8:27:eb:43:08:31")
+            self.logger.info("%s の人が来ました！！！", pkt[Ether].src)
         if ARP not in pkt:
             return
 
@@ -44,10 +44,6 @@ class DashMonitor:
             # pkt[ARP].op == 1: who-has
             # pkt[ARP].op == 2: is-at
             return
-
-        # all packet information will be logged
-        self.logger.info("MAC Address:\t%s", pkt[ARP].hwsrc)  # ARPSourceMACField: mac address
-        self.logger.info("IP Address:\t%s", pkt[ARP].psrc)  # SourceIPField: source ip address
 
         for button in self.buttons:
             if pkt[ARP].hwsrc == button["address"]:
