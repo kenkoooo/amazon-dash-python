@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 import requests
 from scapy.all import sniff, ARP
@@ -39,5 +40,11 @@ class DashMonitor:
 
         for button in self.buttons:
             if pkt[ARP].hwsrc == button["address"]:
+                current_time = int(datetime.now().strftime("%s"))
+                button["next_time"] = button.get("next_time", 0)
+                if button["next_time"] > current_time:
+                    continue
+                button["next_time"] = current_time + button["interval"]
+
                 self.logger.info("Dash Button %s was pushed", button["name"])
                 requests.post(button["url"], data=json.dumps(button["data"]))
