@@ -34,8 +34,8 @@ class DashMonitor:
 
         if not self.mac_address:
             # when the MAC address is not set, all packet information will be logged
-            self.logger.info("MAC Address: %s", pkt[ARP].hwsrc)  # ARPSourceMACField: mac address
-            self.logger.info("IP Address: %s", pkt[ARP].psrc)  # SourceIPField: source ip address
+            self.logger.info("MAC Address:\t%s", pkt[ARP].hwsrc)  # ARPSourceMACField: mac address
+            self.logger.info("IP Address:\t%s", pkt[ARP].psrc)  # SourceIPField: source ip address
         elif pkt[ARP].hwsrc == self.mac_address:
             self.logger.info("Dash Button Pushed")
             self.runnable()
