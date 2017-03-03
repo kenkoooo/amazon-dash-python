@@ -1,6 +1,6 @@
-import argparse
 from logging import getLogger, StreamHandler, DEBUG, Formatter
 
+from DashConfigLoader import load_config
 from DashMonitor import DashMonitor
 
 logger = getLogger(__name__)
@@ -9,10 +9,6 @@ handler.setLevel(DEBUG)
 handler.setFormatter(Formatter(fmt='%(asctime)-15s %(message)s'))
 logger.setLevel(DEBUG)
 logger.addHandler(handler)
-
-
-def happy_function():
-    logger.info("YEAH!!!")
 
 
 def is_valid_mac_address(mac_address):
@@ -34,11 +30,6 @@ def is_valid_mac_address(mac_address):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Amazon Dash Button Monitor')
-    parser.add_argument('-m', nargs='?', help="MAC Address of the Dash Button")
-    args = parser.parse_args()
-    if args.m and not is_valid_mac_address(args.m):
-        parser.print_help()
-    else:
-        monitor = DashMonitor(mac_address=args.m, runnable=happy_function, logger=logger)
-        monitor.start()
+    buttons = load_config("config/config.json", logger=logger)
+    monitor = DashMonitor(buttons=buttons, logger=logger)
+    monitor.start()
