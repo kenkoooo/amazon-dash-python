@@ -20,7 +20,7 @@ class DashMonitor:
 
     def start(self):
         self.logger.info("Start monitoring")
-        sniff(prn=self.arp_monitor_callback, filter="arp", store=0)
+        sniff(prn=self.arp_monitor_callback, store=0)
 
     def arp_monitor_callback(self, pkt):
         """
@@ -29,7 +29,14 @@ class DashMonitor:
         :param pkt: sniffed packet
         :return: None
         """
-        if ARP not in pkt or pkt[ARP].op not in (1, 2):
+        if ARP not in pkt:
+            return
+
+        # all packet information will be logged
+        self.logger.info("MAC Address:\t%s", pkt[ARP].hwsrc)  # ARPSourceMACField: mac address
+        self.logger.info("IP Address:\t%s", pkt[ARP].psrc)  # SourceIPField: source ip address
+
+        if pkt[ARP].op not in (1, 2):
             # pkt[ARP].op == 1: who-has
             # pkt[ARP].op == 2: is-at
             return
