@@ -1,3 +1,4 @@
+import json
 from logging import getLogger, StreamHandler, DEBUG, Formatter
 
 from DashConfigLoader import load_config
@@ -12,5 +13,6 @@ logger.addHandler(handler)
 
 if __name__ == '__main__':
     buttons = load_config("config/config.json", logger=logger)
-    monitor = DashMonitor(buttons=buttons, logger=logger)
+    users = json.load(open("config/users.json")).get("users", [])
+    monitor = DashMonitor(buttons=buttons, logger=logger, users=users)
     monitor.start()

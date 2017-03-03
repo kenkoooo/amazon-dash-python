@@ -3,6 +3,7 @@ from datetime import datetime
 
 import requests
 from scapy.all import sniff, ARP
+from scapy.layers.l2 import Ether
 
 
 class DashMonitor:
@@ -10,25 +11,28 @@ class DashMonitor:
     Monitoring dash button pushing
     """
 
-    def __init__(self, *, buttons, logger):
+    def __init__(self, *, buttons, users: list, logger):
         """
         :param buttons: information about buttons
         :param logger: logger to use
         """
         self.buttons = buttons
         self.logger = logger
+        self.users = users
 
     def start(self):
         self.logger.info("Start monitoring")
         sniff(prn=self.arp_monitor_callback, store=0)
 
-    def arp_monitor_callback(self, pkt):
+    def arp_monitor_callback(self, pkt: Ether):
         """
         catch button-pushing and execute the set function
         show MAC address and IP address from sniffed packet
         :param pkt: sniffed packet
         :return: None
         """
+        if pkt[Ether].src in self.users:
+            self.logger.info("b8:27:eb:43:08:31")
         if ARP not in pkt:
             return
 
