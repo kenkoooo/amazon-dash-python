@@ -1,3 +1,4 @@
 *.iml
 .idea/
 config/config.json
+__pycache__/
