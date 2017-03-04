@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from logging import Logger
 
 import requests
 from scapy.all import sniff, ARP
@@ -11,7 +12,7 @@ class DashMonitor:
     Monitoring dash button pushing
     """
 
-    def __init__(self, *, buttons, users: list, logger):
+    def __init__(self, *, buttons, users: list, logger: Logger):
         """
         :param buttons: information about buttons
         :param logger: logger to use
@@ -33,12 +34,13 @@ class DashMonitor:
         """
         if pkt[Ether].src in self.users:
             self.logger.info("%s の人が来ました！！！", pkt[Ether].src)
+
         if ARP not in pkt:
             return
 
         # all packet information will be logged
-        self.logger.info("MAC Address:\t%s", pkt[ARP].hwsrc)  # ARPSourceMACField: mac address
-        self.logger.info("IP Address:\t%s", pkt[ARP].psrc)  # SourceIPField: source ip address
+        self.logger.debug("MAC Address:\t%s", pkt[ARP].hwsrc)  # ARPSourceMACField: mac address
+        self.logger.debug("IP Address:\t%s", pkt[ARP].psrc)  # SourceIPField: source ip address
 
         if pkt[ARP].op not in (1, 2):
             # pkt[ARP].op == 1: who-has
